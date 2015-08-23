@@ -6,7 +6,7 @@ job         : Freelance Consultant (Data Science)
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [bootstrap, quiz]  # {mathjax, quiz, bootstrap}
 mode        : standalone    # {selfcontained, standalone, draft}
 knit        : slidify::knit2slides
 ---
@@ -51,6 +51,8 @@ confidence <- 95
 
 ## Sample Output
 
+NOTE: The embedded code is avaiable at Github link provided at the last side.
+
 ``` {r Output, echo = FALSE, message = FALSE, warning = FALSE}
 
 returns <- Delt (stock$Close)
@@ -76,8 +78,28 @@ legend ("topleft", legend = c ("Close", "Predicted", paste (confidence, "% Confi
               col = c ("black", "red", "red"), lty = c (1, 1, 2))
 ```
 
-* Disclaimer: don't really trade on based on this forecast.
+* Disclaimer: This app is just for the demonstration of Slidify capabilities, and should not be used for trading decisions.
 
---- .class #id 
+--- &radio
 
 ## Thank you!
+
+A. Application: <https://jshiju.shinyapps.io/devdataprod> <br>
+B. Source: <https://github.com/jshiju/devdataprod> <br>
+C. Presentation : <http://rpubs.com/jshiju/103048> <br>
+
+Please share your feedback on the product!!
+
+1. _1_  (Okay)
+2. _2_  (Good)
+3. _3_  (Very Good)
+4. _4_  (Excellent)
+
+
+*** .hint
+Please try out the app at Rstudio Shinyapps.io !!
+
+*** .explanation
+Thank you for your feedback and support.
+
+
