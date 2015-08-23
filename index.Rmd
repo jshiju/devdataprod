@@ -1,0 +1,83 @@
+---
+title       : Stock Price Forecasting App
+subtitle    : August 2015
+author      : jshiju
+job         : Freelance Consultant (Data Science)
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : standalone    # {selfcontained, standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Stock Graphing and Forecasting 
+
+1. Stock Price Forecasting App - using Shiny
+2. Automatically pulls live data from Yahoo Finance
+3. Graphs stock price and provides a prediction with confidence intervals
+4. Selectable date ranges and forecast windows
+5. Pick your desired confidence interval
+
+--- .class #id 
+
+## Demo
+
+For example, suppose you want to decide if you sould invest your retirement funds in Apple stock.
+
+1. You think the past 90 days are a good indicator of momentum in the next month
+2. You want to be 95% confident in your forecast
+
+``` {r LoadLibraries, echo = FALSE, results = 'hide', message = FALSE, warning = FALSE}
+
+library (quantmod)
+library (data.table)
+```
+
+``` {r SetParameters, echo = TRUE, results = 'hide', message = FALSE, warning = FALSE}
+
+ticker <- "AAPL"
+startDate <- Sys.Date() - 90
+endDate <- Sys.Date()
+data <- getSymbols (ticker, src = "yahoo", auto.assign = FALSE)
+attr (data, "dimnames")[[2]] <- c ("Open", "High", "Low", "Close", "Volume", "Adjusted")
+stock <- data [ (startDate <= index (data)) & (index (data) <= endDate) ]
+forecastDays <- 30
+confidence <- 95
+
+```
+
+--- .class #id 
+
+## Sample Output
+
+``` {r Output, echo = FALSE, message = FALSE, warning = FALSE}
+
+returns <- Delt (stock$Close)
+meanReturn <- mean (returns, na.rm = TRUE)
+sdReturn <- sd (returns, na.rm = TRUE)
+qMult <- qnorm (0.5 + confidence/200)
+
+predictClose <- as.numeric (tail (stock$Close, 1)) * (1 + meanReturn) ^ seq (1, forecastDays, by = 1)
+predictHigh <- predictClose * (1 + sqrt (seq (1, forecastDays, by = 1)) * sdReturn * qMult)
+predictLow <- predictClose * (1 - sqrt (seq (1, forecastDays, by = 1)) * sdReturn * qMult)
+
+predict <- data.table (date = seq.Date (from = as.Date (endDate) + 1, to = as.Date (endDate) + forecastDays, by = 1),
+                       Close = predictClose, High = predictHigh, Low = predictLow)
+
+plot (x = index (stock), y = stock$Close, type = "l", col = "black",
+      xlim = c (as.Date (startDate), max (as.Date (predict$date))),
+      ylim = c (min (stock$Close, predictLow), max (stock$Close, predictHigh)),
+      main = paste (ticker, " price and forecast"), xlab = "Date", ylab = "Price")
+lines (x = predict$date, predict$Close,, lty = 1, col = "red")
+lines (x = predict$date, predict$High, lty = 2, col = "red")
+lines (x = predict$date, predict$Low, lty = 2, col = "red")
+legend ("topleft", legend = c ("Close", "Predicted", paste (confidence, "% Confidence Interval")),
+              col = c ("black", "red", "red"), lty = c (1, 1, 2))
+```
+
+* Disclaimer: don't really trade on based on this forecast.
+
+--- .class #id 
+
+## Thank you!
